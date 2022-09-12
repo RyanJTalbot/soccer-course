@@ -42,12 +42,12 @@ from FCPython import createPitch
 (fig,ax) = createPitch(pitchLengthX,pitchWidthY,'yards','gray')
 
 #Plot the shots
-for i,pass in passes.iterrows():
-    x=pass['location'][0]
-    y=pass['location'][1]
+for i, thepass in passes.iterrows():
+    x=thepass['location'][0]
+    y=thepass['location'][1]
     
-    goal=pass['pass_outcome_name']=='Goal'
-    team_name=pass['team_name']
+    goal=thepass['pass_outcome_name']=='Goal'
+    team_name=thepass['team_name']
     
     circleSize=2
     #circleSize=np.sqrt( ['shot_statsbomb_xg'])*12
@@ -55,14 +55,14 @@ for i,pass in passes.iterrows():
     if (team_name==home_team_required):
         if goal:
             passCircle=plt.Circle((x,pitchWidthY-y),circleSize,color="red")
-            plt.text((x+1),pitchWidthY-y+1,pass['player_name']) 
+            plt.text((x+1),pitchWidthY-y+1,thepass['player_name']) 
         else:
             passCircle=plt.Circle((x,pitchWidthY-y),circleSize,color="red")     
-            shotCircle.set_alpha(.2)
+            passCircle.set_alpha(.2)
     elif (team_name==away_team_required):
         if goal:
             passCircle=plt.Circle((pitchLengthX-x,y),circleSize,color="blue") 
-            plt.text((pitchLengthX-x+1),y+1,pass['player_name']) 
+            plt.text((pitchLengthX-x+1),y+1,thepass['player_name']) 
         else:
             passCircle=plt.Circle((pitchLengthX-x,y),circleSize,color="blue")      
             passCircle.set_alpha(.2)
@@ -73,9 +73,30 @@ plt.text(5,75,away_team_required + ' passes')
 plt.text(80,75,home_team_required + ' passes') 
      
 fig.set_size_inches(10, 7)
-fig.savefig('Output/passes.pdf', dpi=100) 
+#fig.savefig('Output/passes.pdf', dpi=100) 
 plt.show()
 
+
+
+passes = df.loc[df['type_name'] == 'Pass'].set_index('id')
+
+# DRAW Pitch
+(fig, ax) = createPitch(pitchLengthX, pitchWidthY, 'yards', 'gray')
+
+for i, thepass in passes.iterrows():
+   # if thepass['player_name'] == 'Sara Caroline Seger':
+        x=thepass['location'][0]
+        y=thepass['location'][1]
+        passCircle = plt.Circle((x, pitchWidthY - y), 2, color='blue')
+        passCircle.set_alpha(.2)
+        ax.add_patch(passCircle)
+        dx=thepass['pass_end_location'][0] - x
+        dy=thepass['pass_end_location'][1] - y
+        passArrow=plt.Arrow(x, pitchWidthY-y, dx, dy, width=3, color='lightblue')
+        ax.add_patch(passArrow)
+
+fig.set_size_inches(10, 7)
+plt.show()
 #Exercise: 
 #1, Create a dataframe of passes which contains all the passes in the match
 #2, Plot the start point of every Sweden pass. Attacking left to right.
